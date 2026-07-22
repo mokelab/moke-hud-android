@@ -5,7 +5,6 @@ import android.app.Application
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import com.mokelab.hud.android.Hud
 
 /**
@@ -25,11 +24,13 @@ internal class HudActivityWatcher : Application.ActivityLifecycleCallbacks {
         val decorView = activity.window?.decorView as? ViewGroup ?: return
         val overlay = HudOverlayView(activity)
         overlay.visibility = if (Hud.isEnabled) View.VISIBLE else View.GONE
+        // decorView は ViewGroup としてしか扱わないので、親の型を仮定しない
+        // LayoutParams を渡す。親が独自の型を要求する場合は addView 側で変換される。
         decorView.addView(
             overlay,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
             ),
         )
         overlays[activity] = overlay
