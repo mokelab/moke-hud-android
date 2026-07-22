@@ -1,4 +1,4 @@
-package com.mokelab.hud.android
+package com.mokelab.hud.android.demo
 
 import org.junit.Test
 
