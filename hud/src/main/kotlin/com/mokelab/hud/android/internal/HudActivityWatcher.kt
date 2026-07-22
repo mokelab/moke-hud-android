@@ -7,14 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.mokelab.hud.android.Hud
-import java.util.WeakHashMap
 
 /**
  * 全 Activity の `window.decorView` にオーバーレイを attach/detach するコールバック。
- * Activity をリークさせないよう、保持は [WeakHashMap] で行う。
+ *
+ * オーバーレイは Context として Activity を強参照するため、弱参照のマップに入れても
+ * value から key への参照が残ってエントリは回収されない。リークを防いでいるのは
+ * [onActivityDestroyed] での確実な remove であり、保持自体は通常のマップで足りる。
  */
 internal class HudActivityWatcher : Application.ActivityLifecycleCallbacks {
-    private val overlays = WeakHashMap<Activity, HudOverlayView>()
+    private val overlays = mutableMapOf<Activity, HudOverlayView>()
 
     override fun onActivityStarted(activity: Activity) {
         // 冪等ガード: 再 start では二重に attach しない。

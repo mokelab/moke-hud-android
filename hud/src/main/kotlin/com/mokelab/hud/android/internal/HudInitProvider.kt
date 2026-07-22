@@ -13,8 +13,13 @@ import com.mokelab.hud.android.Hud
  */
 internal class HudInitProvider : ContentProvider() {
     override fun onCreate(): Boolean {
-        val application = context?.applicationContext as? Application ?: return false
-        Hud.install(application)
+        // false は provider の初期化失敗を意味する。Application が取れないのは
+        // テスト用 Context などの例外的なケースなので、HUD を諦めるだけに留めて
+        // ホストアプリの起動には影響させない。
+        val application = context?.applicationContext as? Application
+        if (application != null) {
+            Hud.install(application)
+        }
         return true
     }
 
