@@ -1,4 +1,4 @@
-package com.mokelab.hud.android.ui.theme
+package com.mokelab.hud.android.demo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

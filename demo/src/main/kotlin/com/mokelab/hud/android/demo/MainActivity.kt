@@ -1,4 +1,4 @@
-package com.mokelab.hud.android
+package com.mokelab.hud.android.demo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mokelab.hud.android.ui.theme.MokeHudAndroidTheme
+import com.mokelab.hud.android.HudEvent
+import com.mokelab.hud.android.demo.ui.theme.MokeHudAndroidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +21,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MokeHudAndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    // :hud への結線確認用の暫定コード。HUD 本体の実装で置き換える。
                     Greeting(
-                        name = "Android",
+                        name = HudEvent(name = "app_open").name,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

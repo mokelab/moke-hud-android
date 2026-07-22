@@ -1,4 +1,4 @@
-package com.mokelab.hud.android.ui.theme
+package com.mokelab.hud.android.demo.ui.theme
 
 import android.app.Activity
 import android.os.Build

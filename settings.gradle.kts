@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MokeHudAndroid"
 include(":demo")
+include(":hud")
