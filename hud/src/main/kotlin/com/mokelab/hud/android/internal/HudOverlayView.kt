@@ -28,7 +28,10 @@ internal class HudOverlayView(context: Context) : View(context) {
         isClickable = false
         isFocusable = false
         isFocusableInTouchMode = false
+        // contentDescription はテストからの識別用に残しつつ、ホストアプリの
+        // TalkBack 探索に混ざらないようアクセシビリティツリーからは除外する。
         contentDescription = "MokeHud overlay"
+        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
 
         ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
