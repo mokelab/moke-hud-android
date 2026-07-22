@@ -8,11 +8,18 @@ MokeHudAndroid provides a debug-time HUD: a library that overlays Analytics (and
 events on top of a running app's screen. Two modules:
 
 - **`:hud`** — the library itself (`com.android.library`, namespace `com.mokelab.hud.android`).
-  Currently only holds `HudEvent`, the model for one overlaid event. The overlay rendering,
-  the public install API, and Analytics ingestion are not written yet.
+  Holds `HudEvent` (the model for one overlaid event) plus the automatic attach machinery:
+  a manifest-declared `ContentProvider` (`internal/HudInitProvider.kt`) installs
+  `Application.ActivityLifecycleCallbacks` (`internal/HudActivityWatcher.kt`) on `onCreate()`,
+  so a host app gets the HUD just by adding `:hud` to `dependencies` — no `Application`
+  subclass required. The watcher attaches a placeholder `internal/HudOverlayView.kt` to each
+  Activity's `window.decorView`. Actual event rendering and Analytics ingestion are not
+  written yet; see `Hud.kt` for the public surface (`isEnabled` / `setEnabled`).
 - **`:demo`** — the consumer/sample app (`com.android.application`). It depends on `:hud` via
   `implementation(project(":hud"))`. `MainActivity` references `HudEvent` purely to prove the
-  wiring compiles; replace that with a real HUD call once the overlay exists.
+  wiring compiles; replace that with a real HUD call once event rendering exists.
+  `HudOverlayAttachTest` (instrumented) verifies the overlay actually attaches without any
+  changes to `:demo`'s `Application`.
 
 ## Commands
 
@@ -68,8 +75,10 @@ The build scripts use AGP 9 syntax that differs from most online examples:
 - Release shrinking is configured via `optimization { enable = false }`, not `isMinifyEnabled`.
 - R8 keep rules live in `demo/src/main/keepRules/` (AGP merges every file in that directory).
   There is no `proguard-rules.pro`.
-- `:hud` declares its `namespace` in `hud/build.gradle.kts` and has **no `AndroidManifest.xml`**;
-  add one only when the library needs a permission or a manifest component.
+- `:hud` declares its `namespace` in `hud/build.gradle.kts`. It **does** have an
+  `AndroidManifest.xml` (`hud/src/main/AndroidManifest.xml`), added specifically to declare the
+  auto-init `ContentProvider`; it carries no `package` attribute (namespace comes from the
+  build script).
 
 All dependency and plugin coordinates go through the version catalog at
 `gradle/libs.versions.toml` and are referenced as `libs.*` — add new dependencies there rather
@@ -97,8 +106,8 @@ than hardcoding coordinates in a build script.
 
 Deliberately deferred; do not assume these exist:
 
-- The overlay itself (attaching a `View` to each Activity's decor view, e.g. via
-  `Application.ActivityLifecycleCallbacks`) and the public install API.
+- Actual event rendering on the overlay (currently a placeholder band + label) and the
+  event ring buffer / `Hud.post()` API to feed it.
 - Ingestion from Analytics SDKs (Firebase Analytics et al).
 - A `:hud-no-op` sibling module to strip the HUD from release builds — the plan is to add it
   once the public API has settled, at which point `:demo` switches to
