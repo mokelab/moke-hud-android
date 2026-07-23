@@ -35,7 +35,7 @@ dependencies {
 }
 
 group = "com.mokelab.hud"
-version = "0.1.0"
+version = "0.1.1"
 
 afterEvaluate {
     publishing {
@@ -49,6 +49,15 @@ afterEvaluate {
                         "Debug-time HUD overlay for Analytics events on Android",
                     )
                     url.set("https://github.com/mokelab/moke-hud-android")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set(
+                                "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                            )
+                            distribution.set("repo")
+                        }
+                    }
                     scm {
                         url.set("https://github.com/mokelab/moke-hud-android")
                         connection.set(
