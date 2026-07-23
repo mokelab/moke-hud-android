@@ -1,0 +1,103 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.mokelab.hud",
+    "module": "hud-android",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hud-android-0.1.0.aar",
+          "url": "hud-android-0.1.0.aar",
+          "size": 15563,
+          "sha512": "dd306a0773b3c6fcd8b5482288c9b98ad4067d6b0304fa4ef0343ae9ecfc62fcd4db7cbd87315d1bec419143a7f77adcfb23040bdfa98741d83a1c22148f129c",
+          "sha256": "7d138e5f8428a27d7df42f8528ca15432003f178a988dc4b186c75a5f033d8bb",
+          "sha1": "b684844c05e8d9f722e5fdd8226c171045a395a7",
+          "md5": "88b2007bc433ff625099a37ef68f6b3d"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.10.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hud-android-0.1.0.aar",
+          "url": "hud-android-0.1.0.aar",
+          "size": 15563,
+          "sha512": "dd306a0773b3c6fcd8b5482288c9b98ad4067d6b0304fa4ef0343ae9ecfc62fcd4db7cbd87315d1bec419143a7f77adcfb23040bdfa98741d83a1c22148f129c",
+          "sha256": "7d138e5f8428a27d7df42f8528ca15432003f178a988dc4b186c75a5f033d8bb",
+          "sha1": "b684844c05e8d9f722e5fdd8226c171045a395a7",
+          "md5": "88b2007bc433ff625099a37ef68f6b3d"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hud-android-0.1.0-sources.jar",
+          "url": "hud-android-0.1.0-sources.jar",
+          "size": 8357,
+          "sha512": "1afef0432f025d010cf81b071c6c0c57c2cb0bc0fb366c2bd4e342385b296afa29db7fafb4e6c5b9b94b0700503549410b8c05ed9d2ecf797c833190e60acdfa",
+          "sha256": "d2b922e184162079ed584b9bb0ea9c648ab2409185e6e8243ba7ccd2e2342454",
+          "sha1": "b7999f7e30228b2fd6ea5a7051cee1e83099131b",
+          "md5": "66fadaedeb5f7dc1b01081431963673a"
+        }
+      ]
+    }
+  ]
+}
