@@ -42,6 +42,8 @@ dependencies {
     implementation(project(":feature:mokera:api"))
     implementation(project(":feature:mokera:impl"))
     implementation(project(":core:analytics:prod"))
+    // HUD の動作確認時はここを debug 実装に差し替える:
+    // implementation(project(":core:analytics:debug"))
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
