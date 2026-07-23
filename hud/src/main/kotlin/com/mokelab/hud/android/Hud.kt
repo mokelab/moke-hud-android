@@ -69,8 +69,17 @@ object Hud {
      */
     fun post(event: HudEvent, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
         if (!enabled) return
+        // 描画は main スレッドで後から走るため、呼び出しスレッド側で params をスナップショット
+        // しておく。呼び出し側が同じマップを post 後に変更（や別スレッドから変更）しても、
+        // 呼び出し時点の内容を安定して描画でき、イテレーション中の ConcurrentModificationException
+        // も避けられる。表示順を保つため LinkedHashMap でコピーする。空なら不変扱いでそのまま。
+        val snapshot = if (event.params.isEmpty()) {
+            event
+        } else {
+            event.copy(params = LinkedHashMap(event.params))
+        }
         mainHandler.post {
-            watcher?.postEvent(event, durationMillis)
+            watcher?.postEvent(snapshot, durationMillis)
         }
     }
 
