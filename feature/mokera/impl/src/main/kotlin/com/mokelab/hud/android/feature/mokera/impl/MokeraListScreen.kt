@@ -10,12 +10,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mokelab.hud.android.core.analytics.api.AnalyticsLogger
 
 /**
  * モケラ一覧画面。
@@ -27,7 +29,11 @@ fun MokeraListScreen(
     onMokeraClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MokeraListViewModel = hiltViewModel(),
+    analytics: AnalyticsLogger = rememberAnalyticsLogger(),
 ) {
+    LaunchedEffect(Unit) {
+        analytics.screenView(screenName = "mokera_list", screenClass = "MokeraListScreen")
+    }
     val mokeraList by viewModel.uiState.collectAsState()
     MokeraListContent(
         mokeraList = mokeraList,
