@@ -39,6 +39,13 @@ android {
 
 dependencies {
     implementation(project(":hud"))
+    implementation(project(":feature:mokera:api"))
+    implementation(project(":feature:mokera:impl"))
+    implementation(project(":core:analytics:debug"))
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(platform(libs.androidx.compose.bom))
