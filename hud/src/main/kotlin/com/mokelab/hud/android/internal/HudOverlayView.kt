@@ -11,9 +11,11 @@ import androidx.core.view.WindowInsetsCompat
 /**
  * POST されたメッセージを画面上部に帯付きで積み上げて表示するオーバーレイ。
  *
- * 各メッセージは [showMessage] で受け取った時間だけ表示され、期限が来ると自動で
- * 消える。表示状態の変更・タイマー登録はすべてメインスレッド上で行われる前提で、
- * [messages] へのアクセスに同期は掛けていない。
+ * 各メッセージは [showMessage] で受け取った時間が正なら、その時間経過後に自動で
+ * 消える。0 以下を渡した場合はタイマーを張らず、表示数の上限 [MAX_MESSAGES] を
+ * 超えて押し出されるか View が detach されるまで残り続ける。表示状態の変更・
+ * タイマー登録はすべてメインスレッド上で行われる前提で、[messages] へのアクセスに
+ * 同期は掛けていない。
  */
 internal class HudOverlayView(context: Context) : View(context) {
     private val bandPaint = Paint().apply {
@@ -55,8 +57,9 @@ internal class HudOverlayView(context: Context) : View(context) {
         val entry = Message(message)
         messages.add(entry)
         // 大量に POST されても描画が破綻しないよう、古いものから捨てる。
+        // 再描画は末尾の invalidate() 一回にまとめるため、ここでは discard に留める。
         while (messages.size > MAX_MESSAGES) {
-            removeMessage(messages.first())
+            discard(messages.first())
         }
         if (durationMillis > 0) {
             val remover = Runnable { removeMessage(entry) }
@@ -66,10 +69,16 @@ internal class HudOverlayView(context: Context) : View(context) {
         invalidate()
     }
 
+    /** 期限タイマーから呼ばれ、1 件消して再描画する。 */
     private fun removeMessage(entry: Message) {
-        if (!messages.remove(entry)) return
+        if (discard(entry)) invalidate()
+    }
+
+    /** リストから外してタイマーを解除するだけの共通処理。再描画は呼び出し側に任せる。 */
+    private fun discard(entry: Message): Boolean {
+        if (!messages.remove(entry)) return false
         entry.remover?.let(::removeCallbacks)
-        invalidate()
+        return true
     }
 
     override fun onDetachedFromWindow() {
