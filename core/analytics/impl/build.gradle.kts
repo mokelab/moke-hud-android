@@ -1,11 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.mokelab.hud.android.core.analytics.debug"
+    namespace = "com.mokelab.hud.android.core.analytics.impl"
     compileSdk {
         version = release(37)
     }
@@ -24,9 +22,6 @@ android {
 
 dependencies {
     implementation(project(":core:analytics:api"))
-    implementation(project(":core:analytics:impl"))
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
