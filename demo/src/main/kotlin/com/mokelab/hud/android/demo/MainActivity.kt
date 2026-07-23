@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.mokelab.hud.android.demo.ui.theme.MokeHudAndroidTheme
 import com.mokelab.hud.android.feature.mokera.api.MokeraDetail
@@ -45,6 +47,13 @@ private fun MokeraApp() {
             backStack = backStack,
             modifier = Modifier.padding(innerPadding),
             onBack = { backStack.removeLastOrNull() },
+            // entryDecorators を渡すとデフォルト一覧を全置換する。ViewModelStore デコレータで
+            // 各エントリに ViewModelStoreOwner を与え、hiltViewModel() が Activity スコープへ
+            // フォールバックして id を使い回すのを防ぐ。状態保存用のデコレータも併せて並べる。
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
             entryProvider = entryProvider {
                 mokeraEntries(
                     onMokeraClick = { id -> backStack.add(MokeraDetail(id)) },
