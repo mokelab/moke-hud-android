@@ -58,6 +58,23 @@ object Hud {
     }
 
     /**
+     * [HudEvent] を HUD オーバーレイに表示する。任意のスレッドから呼べる。
+     *
+     * [post] の文字列版と違い、[HudEvent.name] を主表示、[HudEvent.params] を詳細行として
+     * 描き分ける。表示時間や無効時の挙動は文字列版と同じ（[isEnabled] が false のときは
+     * 何もせず、キューにも溜めない）。
+     *
+     * @param event 表示するイベント。
+     * @param durationMillis 表示時間（ミリ秒）。省略時は [DEFAULT_MESSAGE_DURATION_MILLIS]。
+     */
+    fun post(event: HudEvent, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
+        if (!enabled) return
+        mainHandler.post {
+            watcher?.postEvent(event, durationMillis)
+        }
+    }
+
+    /**
      * [HudActivityWatcher] を登録し、以降の Activity に自動でオーバーレイを attach する。
      * 二重初期化は [installed] でガードする。
      */
