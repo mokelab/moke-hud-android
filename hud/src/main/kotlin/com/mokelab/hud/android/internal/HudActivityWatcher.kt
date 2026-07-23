@@ -47,6 +47,11 @@ internal class HudActivityWatcher : Application.ActivityLifecycleCallbacks {
         overlays.values.forEach { it.visibility = visibility }
     }
 
+    /** [Hud.post] からメインスレッド経由で呼ばれ、attach 済み全オーバーレイにメッセージを流す。 */
+    internal fun postMessage(message: String, durationMillis: Long) {
+        overlays.values.forEach { it.showMessage(message, durationMillis) }
+    }
+
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
 
     override fun onActivityResumed(activity: Activity) = Unit

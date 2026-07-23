@@ -20,6 +20,9 @@ object Hud {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var watcher: HudActivityWatcher? = null
 
+    /** [post] で表示時間を省略したときのデフォルト表示時間（ミリ秒）。 */
+    const val DEFAULT_MESSAGE_DURATION_MILLIS: Long = 3_000L
+
     /** HUD オーバーレイが表示状態かどうか。 */
     val isEnabled: Boolean
         get() = enabled
@@ -31,6 +34,26 @@ object Hud {
         this.enabled = enabled
         mainHandler.post {
             watcher?.setOverlaysVisible(enabled)
+        }
+    }
+
+    /**
+     * メッセージを HUD オーバーレイに表示する。任意のスレッドから呼べる。
+     *
+     * 表示中の Activity すべてのオーバーレイに流し込み、[durationMillis] 経過後に
+     * 自動で消す。[durationMillis] が 0 以下なら消えず、表示数の上限を超えて古い
+     * ものから押し出されるまで残る。
+     *
+     * [isEnabled] が false のときは何もしない（キューにも溜めない）。非表示中に
+     * 積んだメッセージが再表示時に湧いて出るのを避けるため。
+     *
+     * @param message 表示する文字列。
+     * @param durationMillis 表示時間（ミリ秒）。省略時は [DEFAULT_MESSAGE_DURATION_MILLIS]。
+     */
+    fun post(message: String, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
+        if (!enabled) return
+        mainHandler.post {
+            watcher?.postMessage(message, durationMillis)
         }
     }
 
