@@ -41,8 +41,11 @@ internal class HudActivityWatcher : Application.ActivityLifecycleCallbacks {
 
     /** windowToken が有効になった後（[onActivityResumed] からの post 経由）にオーバーレイを attach する。 */
     private fun attachOverlay(activity: Activity) {
-        // post が二重に積まれても、また既に destroy されていても、ここで弾く。
+        // post が二重に積まれても弾く。
         if (overlays.containsKey(activity)) return
+        // post 実行前に finish/destroy された Activity へ addView すると BadToken で
+        // 例外になるため、その前に確実に弾く。
+        if (activity.isFinishing || activity.isDestroyed) return
         val windowToken = activity.window?.decorView?.windowToken ?: return
         val overlay = HudOverlayView(activity)
         overlay.visibility = if (Hud.isEnabled) View.VISIBLE else View.GONE
