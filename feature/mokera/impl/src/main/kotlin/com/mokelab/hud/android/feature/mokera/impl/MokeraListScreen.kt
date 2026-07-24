@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +51,10 @@ private fun MokeraListContent(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier.fillMaxWidth()) {
+        item {
+            MokeraListHeader()
+            HorizontalDivider()
+        }
         items(mokeraList, key = { it.id }) { mokera ->
             Column(
                 modifier = Modifier
@@ -61,6 +66,41 @@ private fun MokeraListContent(
                 Text(text = mokera.description, style = MaterialTheme.typography.bodyMedium)
             }
             HorizontalDivider()
+        }
+    }
+}
+
+/**
+ * 一覧の先頭に置く、このデモと HUD の説明バンド。
+ *
+ * このアプリが何のデモかと、HUD を実際に映すための有効化手順を伝える。HUD の既定表示は
+ * 手動差し替え運用のため、「デバッグビルドで自動表示」ではなく差し替え手順として案内する
+ * （文言は demo/build.gradle.kts の該当コメントと整合させている）。
+ */
+@Composable
+private fun MokeraListHeader(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "MokeHud デモ",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Text(
+                text = "モケラ図鑑のサンプルアプリです。画面を開いたり「いいね」を押すと " +
+                    "Analytics イベントが送出されます。",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            Text(
+                text = "これらを画面上部の HUD オーバーレイに重ねて確認するには、" +
+                    "demo/build.gradle.kts の :core:analytics:prod を :core:analytics:debug に" +
+                    "差し替えてビルドしてください。",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
         }
     }
 }
