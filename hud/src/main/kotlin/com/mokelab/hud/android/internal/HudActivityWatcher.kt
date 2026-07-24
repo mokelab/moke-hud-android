@@ -87,12 +87,7 @@ internal class HudActivityWatcher : Application.ActivityLifecycleCallbacks {
         overlays.values.forEach { it.visibility = visibility }
     }
 
-    /** [Hud.post] の文字列版からメインスレッド経由で呼ばれ、attach 済み全オーバーレイにメッセージを流す。 */
-    internal fun postMessage(message: String, durationMillis: Long) {
-        overlays.values.forEach { it.showMessage(message, durationMillis) }
-    }
-
-    /** [Hud.post] の [HudEvent] 版からメインスレッド経由で呼ばれ、attach 済み全オーバーレイにイベントを流す。 */
+    /** [Hud.post] からメインスレッド経由で呼ばれ、attach 済み全オーバーレイにイベントを流す。 */
     internal fun postEvent(event: HudEvent, durationMillis: Long) {
         overlays.values.forEach { it.showEvent(event, durationMillis) }
     }
