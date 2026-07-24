@@ -8,6 +8,8 @@ app's screen.
 Just add `:hud` to your dependencies and the HUD is live — **no `Application` subclass
 required**: a manifest-declared `ContentProvider` initializes it automatically.
 
+![HUD overlay screenshot](docs/images/hud-overlay.png)
+
 ## Installation
 
 `:hud` is distributed through a Maven repository hosted on GitHub Pages (no authentication

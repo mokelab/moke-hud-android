@@ -7,6 +7,8 @@
 `:hud` を依存に追加するだけで HUD が有効になります(`Application` サブクラス不要 —
 マニフェスト宣言の `ContentProvider` が自動で初期化します)。
 
+![HUD オーバーレイのスクリーンショット](docs/images/hud-overlay.png)
+
 ## インストール
 
 `:hud` は GitHub Pages 上の Maven リポジトリ（認証不要）で配布しています。
