@@ -7,10 +7,11 @@ import com.mokelab.hud.android.internal.HudActivityWatcher
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * HUD オーバーレイの公開 API。
+ * Public API for the HUD overlay.
  *
- * `install` はホストアプリの `ContentProvider` からのみ呼ばれる想定で internal に留める。
- * 依存に足すだけで動く自動初期化を担保するため、外部から明示的に呼ぶ口は用意しない。
+ * `install` is deliberately kept internal: it is meant to be called only from the library's
+ * own `ContentProvider`. No explicit entry point is exposed to callers, so that adding the
+ * dependency is all it takes for the HUD to initialize itself.
  */
 object Hud {
     @Volatile
@@ -20,15 +21,15 @@ object Hud {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var watcher: HudActivityWatcher? = null
 
-    /** [post] で表示時間を省略したときのデフォルト表示時間（ミリ秒）。 */
+    /** Default display duration in milliseconds, used when [post] omits it. */
     const val DEFAULT_MESSAGE_DURATION_MILLIS: Long = 3_000L
 
-    /** HUD オーバーレイが表示状態かどうか。 */
+    /** Whether the HUD overlay is currently shown. */
     val isEnabled: Boolean
         get() = enabled
 
     /**
-     * HUD オーバーレイの表示/非表示を切り替える。任意のスレッドから呼べる。
+     * Shows or hides the HUD overlay. Safe to call from any thread.
      */
     fun setEnabled(enabled: Boolean) {
         this.enabled = enabled
@@ -38,17 +39,19 @@ object Hud {
     }
 
     /**
-     * メッセージを HUD オーバーレイに表示する。任意のスレッドから呼べる。
+     * Shows a message on the HUD overlay. Safe to call from any thread.
      *
-     * 表示中の Activity すべてのオーバーレイに流し込み、[durationMillis] 経過後に
-     * 自動で消す。[durationMillis] が 0 以下なら消えず、表示数の上限を超えて古い
-     * ものから押し出されるまで残る。
+     * The message is fed to the overlay of every resumed Activity and dismissed
+     * automatically once [durationMillis] has elapsed. If [durationMillis] is 0 or less the
+     * message never expires, and stays until it is pushed out oldest-first once the message
+     * count exceeds its cap.
      *
-     * [isEnabled] が false のときは何もしない（キューにも溜めない）。非表示中に
-     * 積んだメッセージが再表示時に湧いて出るのを避けるため。
+     * Does nothing while [isEnabled] is false — messages are dropped rather than queued, so
+     * that ones posted while hidden do not suddenly pop up when the overlay is shown again.
      *
-     * @param message 表示する文字列。
-     * @param durationMillis 表示時間（ミリ秒）。省略時は [DEFAULT_MESSAGE_DURATION_MILLIS]。
+     * @param message the text to display.
+     * @param durationMillis how long to display it, in milliseconds. Defaults to
+     *   [DEFAULT_MESSAGE_DURATION_MILLIS].
      */
     fun post(message: String, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
         if (!enabled) return
@@ -58,21 +61,24 @@ object Hud {
     }
 
     /**
-     * [HudEvent] を HUD オーバーレイに表示する。任意のスレッドから呼べる。
+     * Shows a [HudEvent] on the HUD overlay. Safe to call from any thread.
      *
-     * [post] の文字列版と違い、[HudEvent.name] を主表示、[HudEvent.params] を詳細行として
-     * 描き分ける。表示時間や無効時の挙動は文字列版と同じ（[isEnabled] が false のときは
-     * 何もせず、キューにも溜めない）。
+     * Unlike the [String] overload of [post], [HudEvent.name] is drawn as the main title and
+     * [HudEvent.params] as a separate detail line. Display duration and the behavior while
+     * disabled match the [String] overload (does nothing while [isEnabled] is false, and
+     * nothing is queued).
      *
-     * @param event 表示するイベント。
-     * @param durationMillis 表示時間（ミリ秒）。省略時は [DEFAULT_MESSAGE_DURATION_MILLIS]。
+     * @param event the event to display.
+     * @param durationMillis how long to display it, in milliseconds. Defaults to
+     *   [DEFAULT_MESSAGE_DURATION_MILLIS].
      */
     fun post(event: HudEvent, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
         if (!enabled) return
-        // 描画は main スレッドで後から走るため、呼び出しスレッド側で params をスナップショット
-        // しておく。呼び出し側が同じマップを post 後に変更（や別スレッドから変更）しても、
-        // 呼び出し時点の内容を安定して描画でき、イテレーション中の ConcurrentModificationException
-        // も避けられる。表示順を保つため LinkedHashMap でコピーする。空なら不変扱いでそのまま。
+        // Drawing happens later on the main thread, so snapshot params here on the calling
+        // thread. Even if the caller mutates the same map after post (or from another thread),
+        // the content as of the call is drawn reliably, and ConcurrentModificationException
+        // during iteration is avoided. Copy into a LinkedHashMap to preserve display order.
+        // An empty map needs no copy — treat it as immutable and pass it through.
         val snapshot = if (event.params.isEmpty()) {
             event
         } else {
@@ -84,8 +90,8 @@ object Hud {
     }
 
     /**
-     * [HudActivityWatcher] を登録し、以降の Activity に自動でオーバーレイを attach する。
-     * 二重初期化は [installed] でガードする。
+     * Registers a [HudActivityWatcher] so that overlays are attached automatically to every
+     * subsequent Activity. Double initialization is guarded by [installed].
      */
     internal fun install(application: Application) {
         if (!installed.compareAndSet(false, true)) return

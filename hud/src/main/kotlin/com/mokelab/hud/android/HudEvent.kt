@@ -1,7 +1,7 @@
 package com.mokelab.hud.android
 
 /**
- * HUD にオーバーレイ表示する 1 件のイベント。
+ * A single event to be shown on the HUD overlay.
  */
 data class HudEvent(
     val name: String,
