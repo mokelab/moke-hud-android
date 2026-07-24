@@ -26,15 +26,26 @@ feeds it through a swappable DI seam.
 - `HudOverlayView` renders POSTed messages as stacked bands at the top of the screen, each with
   an auto-expiry timer; `MAX_MESSAGES = 10` caps the stack and evicts oldest-first. It draws on
   plain `Canvas` and pads for system-bar insets.
+- Real analytics params get long, so the overlay is defensive about layout: the title is
+  ellipsized to a single line, the detail line wraps to at most `MAX_DETAIL_LINES = 3` (the last
+  line ellipsized), and band height is therefore variable. When the stacked bands would exceed
+  the View's height, the oldest ones are dropped **from the draw only** (they stay in `messages`,
+  so a width/height change can bring them back) — matching the oldest-first eviction direction.
+  All measurement goes through `Paint.measureText`; `TextUtils.ellipsize` and `StaticLayout` are
+  deliberately avoided because they break both Robolectric's LEGACY graphics mode and the
+  `ShadowCanvas` text-history observation the unit tests rely on.
 - Public surface is `Hud` (`Hud.kt`): `post(message: String, durationMillis)`,
   `post(event: HudEvent, durationMillis)`, `setEnabled(...)`, `isEnabled`. All are thread-safe
   (they hop to the main thread internally); `install(...)` is `internal` (called only from the
   ContentProvider). When disabled, `post` drops messages rather than queueing them.
 - `HudEvent` (name/params/timestamp) is the structured event type and **is** live: `post(event)`
   carries it through unflattened, and `HudOverlayView` renders `name` as the band title with
-  formatted `params` as a smaller detail line beneath it. The `post(String)` overload remains as
-  a freeform-message primitive (title only, no detail); `timestampMillis` is carried on the model
-  but not yet drawn.
+  formatted `params` as a smaller detail line beneath it, plus `timestampMillis` as `HH:mm:ss`
+  right-aligned on the title line. `HudEvent` is the *only* internal path: `post(String)` builds
+  a `HudEvent(name = message)` on the calling thread and delegates, so a freeform message is
+  simply an event with no params (title + timestamp, no detail line) and picks up its timestamp
+  at call time rather than whenever the main thread drains. `minSdk 24` rules out `java.time`, so
+  the formatting uses a single main-thread-only `SimpleDateFormat`.
 
 ### The demo and its analytics seam
 
@@ -180,6 +191,10 @@ CLAUDE.md previously listed these as deferred; they exist now:
   `screen_view` event with `screen_name`/`screen_class` params).
 - Structured event rendering: `Hud.post(HudEvent)` draws `name` + formatted `params` distinctly
   (see the HUD library notes above).
+- `HudEvent.timestampMillis` rendering — drawn as `HH:mm:ss` at the right end of the title line,
+  for every message including the `post(String)` overload.
+- Overflow-safe layout: title ellipsizing, detail wrapping to `MAX_DETAIL_LINES`, and a cap on
+  the stacked bands' total height (see the HUD library notes above).
 - Maven publishing for `:hud` — `hud/build.gradle.kts` applies `maven-publish` (group
   `com.mokelab.hud`, `artifactId` `hud-android`, current `version` `0.1.1`) and publishes to a
   local `.gh-pages` Maven repo.
@@ -190,7 +205,6 @@ Deliberately deferred; do not assume these exist:
 
 - A real Analytics SDK behind `AnalyticsLoggerImpl` — it only logs to logcat today; Firebase
   Analytics (et al) is not wired.
-- Rendering of `HudEvent.timestampMillis` — the model carries it but the overlay doesn't draw it.
 - A `:hud-no-op` sibling module to strip the HUD from release builds — the plan is to add it
   once the public API has settled, at which point consumers switch to
   `debugImplementation`/`releaseImplementation`. (The demo's prod/debug analytics swap is a

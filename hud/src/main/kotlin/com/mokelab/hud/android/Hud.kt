@@ -46,6 +46,8 @@ object Hud {
      * message never expires, and stays until it is pushed out oldest-first once the message
      * count exceeds its cap.
      *
+     * The message is drawn as a title with no detail line, alongside the time of this call.
+     *
      * Does nothing while [isEnabled] is false — messages are dropped rather than queued, so
      * that ones posted while hidden do not suddenly pop up when the overlay is shown again.
      *
@@ -54,19 +56,20 @@ object Hud {
      *   [DEFAULT_MESSAGE_DURATION_MILLIS].
      */
     fun post(message: String, durationMillis: Long = DEFAULT_MESSAGE_DURATION_MILLIS) {
-        if (!enabled) return
-        mainHandler.post {
-            watcher?.postMessage(message, durationMillis)
-        }
+        // Delegate so the timestamp is taken on the calling thread rather than whenever the
+        // main thread gets around to it: HudEvent.timestampMillis defaults to its construction
+        // time. Params stay empty, so no detail line is drawn and no snapshot copy is made.
+        post(HudEvent(name = message), durationMillis)
     }
 
     /**
      * Shows a [HudEvent] on the HUD overlay. Safe to call from any thread.
      *
-     * Unlike the [String] overload of [post], [HudEvent.name] is drawn as the main title and
-     * [HudEvent.params] as a separate detail line. Display duration and the behavior while
-     * disabled match the [String] overload (does nothing while [isEnabled] is false, and
-     * nothing is queued).
+     * [HudEvent.name] is drawn as the main title, [HudEvent.params] as a separate detail line
+     * below it, and [HudEvent.timestampMillis] as `HH:mm:ss` at the right end of the title
+     * line. Unlike the [String] overload of [post], which never has a detail line, params are
+     * carried through. Display duration and the behavior while disabled match that overload
+     * (does nothing while [isEnabled] is false, and nothing is queued).
      *
      * @param event the event to display.
      * @param durationMillis how long to display it, in milliseconds. Defaults to
