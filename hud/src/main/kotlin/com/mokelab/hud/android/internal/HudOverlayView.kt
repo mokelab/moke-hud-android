@@ -271,7 +271,10 @@ internal class HudOverlayView(context: Context) : View(context) {
         while (rest.isNotEmpty()) {
             if (lines.size == maxLines - 1) {
                 // 最終行。残り全部を 1 行に押し込み、入らない分は省略記号で締める。
-                lines.add(ellipsize(rest, paint, maxWidth))
+                // 省略記号すら入らない幅では ellipsize が空文字を返す。見えない行を足すと
+                // 帯の高さだけ増えて表示できる件数が減るので、その場合は行自体を落とす。
+                val lastLine = ellipsize(rest, paint, maxWidth)
+                if (lastLine.isNotEmpty()) lines.add(lastLine)
                 break
             }
             val take = breakAt(rest, paint, maxWidth)
