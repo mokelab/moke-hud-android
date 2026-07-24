@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,8 +63,8 @@ private fun MokeraListContent(
                     .clickable { onMokeraClick(mokera.id) }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
-                Text(text = mokera.name, style = MaterialTheme.typography.titleMedium)
-                Text(text = mokera.description, style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(mokera.nameRes), style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(mokera.descriptionRes), style = MaterialTheme.typography.bodyMedium)
             }
             HorizontalDivider()
         }
@@ -75,7 +76,7 @@ private fun MokeraListContent(
  *
  * このアプリが何のデモかと、HUD を実際に映すための有効化手順を伝える。HUD の既定表示は
  * 手動差し替え運用のため、「デバッグビルドで自動表示」ではなく差し替え手順として案内する
- * （文言は demo/build.gradle.kts の該当コメントと整合させている）。
+ * （文言は demo/app/build.gradle.kts の該当コメントと整合させている）。
  */
 @Composable
 private fun MokeraListHeader(modifier: Modifier = Modifier) {
@@ -85,19 +86,16 @@ private fun MokeraListHeader(modifier: Modifier = Modifier) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "MokeHud デモ",
+                text = stringResource(R.string.mokera_demo_header_title),
                 style = MaterialTheme.typography.titleSmall,
             )
             Text(
-                text = "モケラ図鑑のサンプルアプリです。画面を開いたり「いいね」を押すと " +
-                    "Analytics イベントが送出されます。",
+                text = stringResource(R.string.mokera_demo_header_description),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp),
             )
             Text(
-                text = "これらを画面上部の HUD オーバーレイに重ねて確認するには、" +
-                    "demo/build.gradle.kts の :core:analytics:prod を :core:analytics:debug に" +
-                    "差し替えてビルドしてください。",
+                text = stringResource(R.string.mokera_demo_header_enable_hud),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 8.dp),
             )

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,6 +41,7 @@ fun MokeraDetailScreen(
     LaunchedEffect(id) {
         analytics.screenView(screenName = "mokera_detail", screenClass = "MokeraDetailScreen")
     }
+    val mokeraName = viewModel.mokera?.let { stringResource(it.nameRes) }
     MokeraDetailContent(
         mokera = viewModel.mokera,
         onBack = onBack,
@@ -47,7 +49,7 @@ fun MokeraDetailScreen(
             viewModel.mokera?.let { mokera ->
                 analytics.logEvent(
                     name = "like_mokera",
-                    params = mapOf("mokera_id" to mokera.id, "mokera_name" to mokera.name),
+                    params = mapOf("mokera_id" to mokera.id, "mokera_name" to mokeraName.orEmpty()),
                 )
             }
         },
@@ -68,7 +70,7 @@ private fun MokeraDetailContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(mokera?.name.orEmpty()) },
+                title = { Text(mokera?.let { stringResource(it.nameRes) }.orEmpty()) },
                 navigationIcon = {
                     // material-icons-core を依存に追加しないため、同梱の vector drawable を使う。
                     IconButton(onClick = onBack) {
@@ -80,13 +82,13 @@ private fun MokeraDetailContent(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
             if (mokera != null) {
-                Text(text = mokera.name, style = MaterialTheme.typography.headlineSmall)
-                Text(text = mokera.description, style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(mokera.nameRes), style = MaterialTheme.typography.headlineSmall)
+                Text(text = stringResource(mokera.descriptionRes), style = MaterialTheme.typography.bodyLarge)
                 Button(onClick = onLike, modifier = Modifier.padding(top = 16.dp)) {
-                    Text(text = "いいね")
+                    Text(text = stringResource(R.string.mokera_like))
                 }
             } else {
-                Text(text = "モケラが見つかりませんでした。")
+                Text(text = stringResource(R.string.mokera_not_found))
             }
         }
     }
