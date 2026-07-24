@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:analytics:api"))
+    implementation(project(":demo:core:analytics:api"))
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

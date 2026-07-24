@@ -27,8 +27,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:mokera:api"))
-    implementation(project(":core:analytics:api"))
+    implementation(project(":demo:feature:mokera:api"))
+    implementation(project(":demo:core:analytics:api"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)

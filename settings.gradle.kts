@@ -23,11 +23,11 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MokeHudAndroid"
-include(":demo")
+include(":demo:app")
 include(":hud")
-include(":core:analytics:api")
-include(":core:analytics:prod")
-include(":core:analytics:debug")
-include(":core:analytics:impl")
-include(":feature:mokera:api")
-include(":feature:mokera:impl")
+include(":demo:core:analytics:api")
+include(":demo:core:analytics:prod")
+include(":demo:core:analytics:debug")
+include(":demo:core:analytics:impl")
+include(":demo:feature:mokera:api")
+include(":demo:feature:mokera:impl")

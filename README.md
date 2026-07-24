@@ -56,6 +56,8 @@ git -C .gh-pages push
 ## モジュール
 
 - **`:hud`** — ライブラリ本体（`com.mokelab.hud.android`）。配布対象。
-- **`:demo`** — 動作確認用のサンプルアプリ。`implementation(project(":hud"))` で参照。
+- **`:demo:app`** — 動作確認用のサンプルアプリ。`implementation(project(":hud"))` で参照。
+  `:demo:core:analytics:*` と `:demo:feature:mokera:*` を伴うマルチモジュール構成で、
+  デモ一式は `:demo:` 配下にまとまっている（`:hud` はトップレベルのプロダクト本体）。
 
 開発時のビルド・テストコマンドは [`CLAUDE.md`](CLAUDE.md) を参照してください。

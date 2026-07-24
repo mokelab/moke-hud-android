@@ -30,8 +30,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:analytics:api"))
-    implementation(project(":core:analytics:impl"))
+    implementation(project(":demo:core:analytics:api"))
+    implementation(project(":demo:core:analytics:impl"))
     implementation(project(":hud"))
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
