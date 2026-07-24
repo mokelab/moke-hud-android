@@ -1,13 +1,17 @@
 # MokeHud Android
 
-デバッグ時に、動作中アプリの画面上へ Analytics イベントなどをオーバーレイ表示する HUD ライブラリです。
+English | [日本語](README.ja.md)
 
-`:hud` を依存に追加するだけで HUD が有効になります(`Application` サブクラス不要 —
-マニフェスト宣言の `ContentProvider` が自動で初期化します)。
+A debug-time HUD library that overlays Analytics events (and similar) on top of your running
+app's screen.
 
-## インストール
+Just add `:hud` to your dependencies and the HUD is live — **no `Application` subclass
+required**: a manifest-declared `ContentProvider` initializes it automatically.
 
-`:hud` は GitHub Pages 上の Maven リポジトリ（認証不要）で配布しています。
+## Installation
+
+`:hud` is distributed through a Maven repository hosted on GitHub Pages (no authentication
+needed).
 
 ```kotlin
 // settings.gradle.kts
@@ -21,18 +25,18 @@ dependencyResolutionManagement {
 ```
 
 ```kotlin
-// アプリモジュールの build.gradle.kts
+// build.gradle.kts of your app module
 dependencies {
-    implementation("com.mokelab.hud:hud-android:0.1.0")
+    implementation("com.mokelab.hud:hud-android:0.1.1")
 }
 ```
 
-## リリース手順（メンテナ向け）
+## Releasing (for maintainers)
 
-`gh-pages` ブランチを Maven リポジトリとして配信しています。ローカルの git worktree
-`.gh-pages/`（`.gitignore` 済み）へ成果物を出力し、commit → push します。
+The `gh-pages` branch is served as the Maven repository. Artifacts are written into the local
+git worktree `.gh-pages/` (already in `.gitignore`), then committed and pushed.
 
-初回のみ:
+First time only:
 
 ```bash
 git worktree add --orphan -b gh-pages .gh-pages
@@ -40,24 +44,25 @@ git worktree add --orphan -b gh-pages .gh-pages
   && git commit -m "chore: init gh-pages maven repo" && git push -u origin gh-pages)
 ```
 
-その後、GitHub の Settings → Pages で **Source = `gh-pages` / `/ (root)`** を設定します。
+Then, in the repository's Settings → Pages, set **Source = `gh-pages` / `/ (root)`**.
 
-各リリース:
+For each release:
 
 ```bash
-# 1. hud/build.gradle.kts の version を更新
+# 1. Bump `version` in hud/build.gradle.kts
 git -C .gh-pages pull
-./gradlew :hud:publish            # .gh-pages/ に Maven レイアウトを出力
+./gradlew :hud:publish            # writes the Maven layout into .gh-pages/
 git -C .gh-pages add -A
 git -C .gh-pages commit -m "publish com.mokelab.hud:hud-android:<version>"
 git -C .gh-pages push
 ```
 
-## モジュール
+## Modules
 
-- **`:hud`** — ライブラリ本体（`com.mokelab.hud.android`）。配布対象。
-- **`:demo:app`** — 動作確認用のサンプルアプリ。`implementation(project(":hud"))` で参照。
-  `:demo:core:analytics:*` と `:demo:feature:mokera:*` を伴うマルチモジュール構成で、
-  デモ一式は `:demo:` 配下にまとまっている（`:hud` はトップレベルのプロダクト本体）。
+- **`:hud`** — the library itself (`com.mokelab.hud.android`). This is what gets published.
+- **`:demo:app`** — a sample app for trying the HUD out, wired up with
+  `implementation(project(":hud"))`. It is a multi-module setup with
+  `:demo:core:analytics:*` and `:demo:feature:mokera:*`; the entire demo lives under `:demo:`,
+  keeping `:hud` — the product — at the top level.
 
-開発時のビルド・テストコマンドは [`CLAUDE.md`](CLAUDE.md) を参照してください。
+See [`CLAUDE.md`](CLAUDE.md) for the build and test commands used during development.
