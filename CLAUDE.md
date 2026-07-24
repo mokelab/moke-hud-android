@@ -38,61 +38,63 @@ feeds it through a swappable DI seam.
 
 ### The demo and its analytics seam
 
-`:demo` (`com.android.application`) is a small Compose + nav3 app (a mokera list⇄detail) that
+The whole demo lives under the `:demo:` Gradle path (`:demo:app`, `:demo:core:analytics:*`,
+`:demo:feature:mokera:*`), so only `:hud` — the product — sits at the top level. `:demo:app`
+(`com.android.application`) is a small Compose + nav3 app (a mokera list⇄detail) that
 emits Analytics events through an interface, then binds that interface to either a plain or a
 HUD-decorating implementation via Hilt. The seam is what the library is meant to plug into:
 
-- **`:core:analytics:api`** — the `AnalyticsLogger` interface (`screenView`, `logEvent`). Pure
+- **`:demo:core:analytics:api`** — the `AnalyticsLogger` interface (`screenView`, `logEvent`). Pure
   abstraction; no Hilt, no HUD. Feature code depends only on this.
-- **`:core:analytics:impl`** — `AnalyticsLoggerImpl`, the "real" logger. Currently a placeholder
+- **`:demo:core:analytics:impl`** — `AnalyticsLoggerImpl`, the "real" logger. Currently a placeholder
   that only writes to logcat (stands in for a Firebase Analytics call).
-- **`:core:analytics:prod`** — Hilt module binding `AnalyticsLogger` directly to
+- **`:demo:core:analytics:prod`** — Hilt module binding `AnalyticsLogger` directly to
   `AnalyticsLoggerImpl`. No `:hud` dependency.
-- **`:core:analytics:debug`** — Hilt module that binds `AnalyticsLogger` to
+- **`:demo:core:analytics:debug`** — Hilt module that binds `AnalyticsLogger` to
   `HudAnalyticsLogger`, which calls `Hud.post(...)` for each event and then forwards to the real
   `AnalyticsLoggerImpl` (injected under the `@DelegateLogger` qualifier). This module depends on
   `:hud`; it is the only place the demo's app code touches the HUD.
-- **`:feature:mokera:{api,impl}`** — the sample feature. `:api` holds the `@Serializable` nav3
+- **`:demo:feature:mokera:{api,impl}`** — the sample feature. `:api` holds the `@Serializable` nav3
   `NavKey`s (`MokeraList`, `MokeraDetail(id)`); `:impl` holds the Compose screens + Hilt
   ViewModels (detail uses assisted injection for its `id`) and the `mokeraEntries` entry
   provider. Composables pull the singleton `AnalyticsLogger` via a Hilt `EntryPoint`
-  (`rememberAnalyticsLogger`), so `:impl` depends only on `:core:analytics:api` — the concrete
+  (`rememberAnalyticsLogger`), so `:impl` depends only on `:demo:core:analytics:api` — the concrete
   binding is chosen by the app.
-- **Which logger the demo uses is a hand-edited line** in `demo/build.gradle.kts`: it currently
-  depends on `:core:analytics:prod` (logcat only, HUD not shown), with the
-  `:core:analytics:debug` swap commented out right below it. So a fresh clone does **not** show
+- **Which logger the demo uses is a hand-edited line** in `demo/app/build.gradle.kts`: it currently
+  depends on `:demo:core:analytics:prod` (logcat only, HUD not shown), with the
+  `:demo:core:analytics:debug` swap commented out right below it. So a fresh clone does **not** show
   the HUD until you flip that line. `DemoApp` is `@HiltAndroidApp` and `MainActivity` is
   `@AndroidEntryPoint` — that `Application` exists for Hilt, not for the HUD (the HUD still
   needs no Application changes). `HudOverlayAttachTest` (instrumented) verifies the overlay
-  attaches as its own window without touching `:demo`'s `Application`.
+  attaches as its own window without touching `:demo:app`'s `Application`.
 
 ## Commands
 
-The build is multi-module: `:hud`, `:demo`, `:core:analytics:{api,impl,prod,debug}`, and
-`:feature:mokera:{api,impl}` (see `settings.gradle.kts`). The examples below use `:demo` and
-`:hud`; substitute any module path to run the same task against it.
+The build is multi-module: `:hud`, `:demo:app`, `:demo:core:analytics:{api,impl,prod,debug}`, and
+`:demo:feature:mokera:{api,impl}` (see `settings.gradle.kts`). The examples below use `:demo:app`
+and `:hud`; substitute any module path to run the same task against it.
 
 ```bash
-./gradlew :demo:assembleDebug            # build the demo APK
-./gradlew :demo:installDebug             # build + install on a connected device/emulator
-./gradlew :demo:testDebugUnitTest        # host-side (JVM) unit tests
-./gradlew :demo:connectedDebugAndroidTest # instrumented tests (needs a device/emulator)
-./gradlew :demo:lintDebug                # Android Lint; `lintFix` applies safe fixes
-./gradlew :demo:check                    # lint + unit tests
-./gradlew :hud:assembleDebug             # build the library AAR
+./gradlew :demo:app:assembleDebug            # build the demo APK
+./gradlew :demo:app:installDebug             # build + install on a connected device/emulator
+./gradlew :demo:app:testDebugUnitTest        # host-side (JVM) unit tests
+./gradlew :demo:app:connectedDebugAndroidTest # instrumented tests (needs a device/emulator)
+./gradlew :demo:app:lintDebug                # Android Lint; `lintFix` applies safe fixes
+./gradlew :demo:app:check                    # lint + unit tests
+./gradlew :hud:assembleDebug                 # build the library AAR
 ```
 
 Run a single unit test class or method with the standard Gradle test filter:
 
 ```bash
-./gradlew :demo:testDebugUnitTest --tests 'com.mokelab.hud.android.demo.ExampleUnitTest'
+./gradlew :demo:app:testDebugUnitTest --tests 'com.mokelab.hud.android.demo.ExampleUnitTest'
 ./gradlew :hud:testDebugUnitTest --tests '*.HudEventTest'
 ```
 
 Single instrumented test:
 
 ```bash
-./gradlew :demo:connectedDebugAndroidTest \
+./gradlew :demo:app:connectedDebugAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=com.mokelab.hud.android.demo.ExampleInstrumentedTest
 ```
 
@@ -117,13 +119,13 @@ The build scripts use AGP 9 syntax that differs from most online examples:
 - **No `org.jetbrains.kotlin.android` plugin anywhere.** Kotlin compiles through AGP 9's
   built-in Kotlin support, so a module's `plugins` block only needs `com.android.application`
   or `com.android.library`, plus feature plugins as needed: `kotlin-compose` for Compose
-  (`:demo`, `:feature:mokera:impl`), `hilt` + `ksp` for Hilt DI (`:demo`, both
-  `:core:analytics:{prod,debug}`, `:feature:mokera:impl`), and `kotlin-serialization` for the
-  nav3 `@Serializable` keys (`:feature:mokera:api`). Do not add the Kotlin Android plugin "to
-  make Kotlin work" — it is not missing. All are referenced as `libs.plugins.*`.
+  (`:demo:app`, `:demo:feature:mokera:impl`), `hilt` + `ksp` for Hilt DI (`:demo:app`, both
+  `:demo:core:analytics:{prod,debug}`, `:demo:feature:mokera:impl`), and `kotlin-serialization`
+  for the nav3 `@Serializable` keys (`:demo:feature:mokera:api`). Do not add the Kotlin Android
+  plugin "to make Kotlin work" — it is not missing. All are referenced as `libs.plugins.*`.
 - `compileSdk { version = release(37) }`, not `compileSdk = 37`.
 - Release shrinking is configured via `optimization { enable = false }`, not `isMinifyEnabled`.
-- R8 keep rules live in `demo/src/main/keepRules/` (AGP merges every file in that directory).
+- R8 keep rules live in `demo/app/src/main/keepRules/` (AGP merges every file in that directory).
   There is no `proguard-rules.pro`.
 - `:hud` declares its `namespace` in `hud/build.gradle.kts`. It **does** have an
   `AndroidManifest.xml` (`hud/src/main/AndroidManifest.xml`), added specifically to declare the
@@ -136,27 +138,33 @@ than hardcoding coordinates in a build script.
 
 ## Code layout
 
-- Namespace and Kotlin package match in every module, and each module's namespace mirrors its
-  Gradle path: `:hud` is `com.mokelab.hud.android`, `:demo` is `com.mokelab.hud.android.demo`
-  (also its `applicationId`), `:core:analytics:api` is
-  `com.mokelab.hud.android.core.analytics.api`, `:feature:mokera:impl` is
-  `com.mokelab.hud.android.feature.mokera.impl`, and so on. Keep them aligned — e.g. putting
-  `:demo` code back into `com.mokelab.hud.android` would split that package across two modules
-  and make an unqualified `R` in `:demo` resolve to the library's.
+- Namespace and Kotlin package match in every module. Namespaces predate the `:demo:` nesting
+  and were **deliberately kept** when the demo modules moved under `:demo:` — so the Kotlin
+  package still mirrors the *old, flat* module name, not the current Gradle path: `:hud` is
+  `com.mokelab.hud.android`, `:demo:app` is `com.mokelab.hud.android.demo` (also its
+  `applicationId`), `:demo:core:analytics:api` is `com.mokelab.hud.android.core.analytics.api`,
+  `:demo:feature:mokera:impl` is `com.mokelab.hud.android.feature.mokera.impl`, and so on —
+  note there is no `.demo.` segment in the core/feature packages even though their Gradle path
+  now starts with `:demo:`. This mismatch is intentional (moving Gradle paths, not source), so
+  do not "fix" a package to match its Gradle path. Still keep namespace and Kotlin package
+  aligned *with each other* within a module — e.g. putting `:demo:app` code back into
+  `com.mokelab.hud.android` would split that package across two modules and make an unqualified
+  `R` in `:demo:app` resolve to the library's.
 - **Dependency direction runs api ← impl/prod/debug ← app, never the reverse.** Feature and
-  app-side code depend on `:core:analytics:api` only; the concrete `AnalyticsLogger` binding is
-  supplied by whichever `:core:analytics:{prod,debug}` module the app pulls in. Only
-  `:core:analytics:debug` (and `:demo`, transitively) may depend on `:hud`. Don't make
-  `:feature:*` or `:core:analytics:api`/`impl` reach into `:hud`.
+  app-side code depend on `:demo:core:analytics:api` only; the concrete `AnalyticsLogger` binding
+  is supplied by whichever `:demo:core:analytics:{prod,debug}` module the app pulls in. Only
+  `:demo:core:analytics:debug` (and `:demo:app`, transitively) may depend on `:hud`. Don't make
+  `:demo:feature:*` or `:demo:core:analytics:api`/`impl` reach into `:hud`.
 - Source directories are inconsistent for historical reasons; put new files where that source
   set already keeps them:
   - `:hud` — `hud/src/main/kotlin/`, `hud/src/test/kotlin/`
-  - `:demo` — `demo/src/main/kotlin/`, but `demo/src/test/java/` and `demo/src/androidTest/java/`
-  - `:core:*` and `:feature:*` — `src/main/kotlin/`
+  - `:demo:app` — `demo/app/src/main/kotlin/`, but `demo/app/src/test/java/` and
+    `demo/app/src/androidTest/java/`
+  - `:demo:core:*` and `:demo:feature:*` — `demo/core/...` / `demo/feature/...`, each with `src/main/kotlin/`
 - **`:hud` does not use Compose.** The overlay is meant to attach to arbitrary host apps, so the
   library stays on plain `View`/`Canvas` and depends only on `androidx.core-ktx`. Do not pull
   Compose into `hud/build.gradle.kts`.
-- **`:demo` is Jetpack Compose only** — no XML layouts, no view binding. `MainActivity` calls
+- **`:demo:app` is Jetpack Compose only** — no XML layouts, no view binding. `MainActivity` calls
   `enableEdgeToEdge()` and wraps content in `MokeHudAndroidTheme` (`ui/theme/Theme.kt`), which
   prefers Android 12+ dynamic color and falls back to the Purple/Pink palette in
   `ui/theme/Color.kt`.
@@ -167,7 +175,7 @@ CLAUDE.md previously listed these as deferred; they exist now:
 
 - Overlay event rendering (stacked message bands with per-message expiry, `MAX_MESSAGES` cap)
   and the `Hud.post(...)` API that feeds it.
-- The app→HUD ingestion path: `HudAnalyticsLogger` in `:core:analytics:debug` turns every
+- The app→HUD ingestion path: `HudAnalyticsLogger` in `:demo:core:analytics:debug` turns every
   `AnalyticsLogger` call into a structured `Hud.post(HudEvent(...))` (`screenView` becomes a
   `screen_view` event with `screen_name`/`screen_class` params).
 - Structured event rendering: `Hud.post(HudEvent)` draws `name` + formatted `params` distinctly
