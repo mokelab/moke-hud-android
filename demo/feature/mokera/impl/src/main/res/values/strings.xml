@@ -1,0 +1,18 @@
+<resources>
+    <string name="mokera_demo_header_title">MokeHud Demo</string>
+    <string name="mokera_demo_header_description">A sample Mokera field guide. Opening a screen or tapping \"Like\" emits an Analytics event.</string>
+    <string name="mokera_demo_header_enable_hud">To see these overlaid on the HUD at the top of the screen, swap :demo:core:analytics:prod for :demo:core:analytics:debug in demo/app/build.gradle.kts and rebuild.</string>
+    <string name="mokera_like">Like</string>
+    <string name="mokera_not_found">Mokera not found.</string>
+
+    <string name="mokera_name_green_tea">Green Tea Mokera</string>
+    <string name="mokera_description_green_tea">Born from the green tea in a teacup. Calm and quiet, it shows up when you need a moment to breathe.</string>
+    <string name="mokera_name_coffee">Coffee Mokera</string>
+    <string name="mokera_description_coffee">Born from a freshly brewed cup of coffee. Your late-night work buddy — always sleepy-looking, yet somehow full of energy.</string>
+    <string name="mokera_name_milk">Milk Mokera</string>
+    <string name="mokera_description_milk">Born from a glass of milk. Pure white and fluffy, friendly enough to warm up to anyone right away.</string>
+    <string name="mokera_name_orange_juice">Orange Juice Mokera</string>
+    <string name="mokera_description_orange_juice">Born from a glass of orange juice. Bursting with energy, it is usually the first to show up in the morning.</string>
+    <string name="mokera_name_melon_soda">Melon Soda Mokera</string>
+    <string name="mokera_description_melon_soda">Born from a melon soda. Fizzy and forever bouncing; a moody one whose mood bubbles right to the surface.</string>
+</resources>

@@ -1,42 +1,45 @@
 package com.mokelab.hud.android.feature.mokera.impl
 
+import androidx.annotation.StringRes
+
 /**
  * デモ用のモケラ（架空のマスコット）1体を表すモデル。
  *
  * モケラはクリエイターの近くにある飲み物から誕生する生き物。どの飲み物から生まれたかで
  * 見た目や性格が変わる。List-Detail デモに閉じたデータで、他モジュールには公開しない。
+ * 名前・説明はロケールごとに切り替えられるよう文字列リソースの id で持つ。
  */
 data class Mokera(
     val id: String,
-    val name: String,
-    val description: String,
+    @StringRes val nameRes: Int,
+    @StringRes val descriptionRes: Int,
 )
 
 /** デモ用にハードコードしたモケラの一覧。それぞれ身近な飲み物から生まれている。 */
 internal val sampleMokeraList: List<Mokera> = listOf(
     Mokera(
         id = "1",
-        name = "緑茶モケラ",
-        description = "湯呑みの緑茶から生まれたモケラ。落ち着いた性格で、ほっと一息つきたいときにそばに現れる。",
+        nameRes = R.string.mokera_name_green_tea,
+        descriptionRes = R.string.mokera_description_green_tea,
     ),
     Mokera(
         id = "2",
-        name = "コーヒーモケラ",
-        description = "淹れたてのコーヒーから生まれたモケラ。夜更かし作業のお供で、いつも眠そうにしているのに元気。",
+        nameRes = R.string.mokera_name_coffee,
+        descriptionRes = R.string.mokera_description_coffee,
     ),
     Mokera(
         id = "3",
-        name = "ミルクモケラ",
-        description = "コップのミルクから生まれたモケラ。まっしろでふわふわ。人懐っこく、誰にでもすぐなつく。",
+        nameRes = R.string.mokera_name_milk,
+        descriptionRes = R.string.mokera_description_milk,
     ),
     Mokera(
         id = "4",
-        name = "オレンジジュースモケラ",
-        description = "オレンジジュースから生まれたモケラ。いつも元気いっぱいで、朝いちばんに姿を現すことが多い。",
+        nameRes = R.string.mokera_name_orange_juice,
+        descriptionRes = R.string.mokera_description_orange_juice,
     ),
     Mokera(
         id = "5",
-        name = "メロンソーダモケラ",
-        description = "メロンソーダから生まれたモケラ。しゅわしゅわとよく跳ねる。気分屋で、機嫌がそのまま泡になる。",
+        nameRes = R.string.mokera_name_melon_soda,
+        descriptionRes = R.string.mokera_description_melon_soda,
     ),
 )

@@ -1,0 +1,18 @@
+<resources>
+    <string name="mokera_demo_header_title">MokeHud デモ</string>
+    <string name="mokera_demo_header_description">モケラ図鑑のサンプルアプリです。画面を開いたり「いいね」を押すと Analytics イベントが送出されます。</string>
+    <string name="mokera_demo_header_enable_hud">これらを画面上部の HUD オーバーレイに重ねて確認するには、demo/app/build.gradle.kts の :demo:core:analytics:prod を :demo:core:analytics:debug に差し替えてビルドしてください。</string>
+    <string name="mokera_like">いいね</string>
+    <string name="mokera_not_found">モケラが見つかりませんでした。</string>
+
+    <string name="mokera_name_green_tea">緑茶モケラ</string>
+    <string name="mokera_description_green_tea">湯呑みの緑茶から生まれたモケラ。落ち着いた性格で、ほっと一息つきたいときにそばに現れる。</string>
+    <string name="mokera_name_coffee">コーヒーモケラ</string>
+    <string name="mokera_description_coffee">淹れたてのコーヒーから生まれたモケラ。夜更かし作業のお供で、いつも眠そうにしているのに元気。</string>
+    <string name="mokera_name_milk">ミルクモケラ</string>
+    <string name="mokera_description_milk">コップのミルクから生まれたモケラ。まっしろでふわふわ。人懐っこく、誰にでもすぐなつく。</string>
+    <string name="mokera_name_orange_juice">オレンジジュースモケラ</string>
+    <string name="mokera_description_orange_juice">オレンジジュースから生まれたモケラ。いつも元気いっぱいで、朝いちばんに姿を現すことが多い。</string>
+    <string name="mokera_name_melon_soda">メロンソーダモケラ</string>
+    <string name="mokera_description_melon_soda">メロンソーダから生まれたモケラ。しゅわしゅわとよく跳ねる。気分屋で、機嫌がそのまま泡になる。</string>
+</resources>
