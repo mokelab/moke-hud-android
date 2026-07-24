@@ -20,6 +20,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric が host-side でリソース/フレームワークを参照できるようにする。
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -30,6 +37,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }
